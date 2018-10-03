@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "webpack-dev-server --mode development --hot --colors --progress --open",
-    "build": "webpack --mode none --colors --progress"
+    "build": "webpack --progress"
   },
   "dependencies": {
     "bootstrap": "^3.3.7",

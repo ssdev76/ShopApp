@@ -5,7 +5,6 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const isDevelopment = argv.mode === 'development';
 const isProduction = !isDevelopment;
 const distPath = path.join(__dirname, '/public');
-console.log(distPath);
  
 const config = {
   devtool: "source-map",
@@ -13,7 +12,6 @@ const config = {
   output:{
     filename: "bundle.js",
     path: distPath
-    //publicPath: '/reactjs/public/',
   },
   module: {
     rules: [
@@ -41,8 +39,9 @@ const config = {
 	optimization: isProduction ? {
 		minimizer: [
 			new UglifyJsPlugin({
-			sourceMap: true,
+				sourceMap: true,
 				uglifyOptions: {
+					mangle: true,
 					compress: {
 						inline: false,
 						warnings: false,

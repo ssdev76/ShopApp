@@ -34,12 +34,21 @@ export default (cart = {items: [], coupons: []}, action) => {
   return cart;
 }
 
+/**
+  * Add product to cart
+  *
+  * @param {Array} items - products in cart
+  * @param {Object} item - product that must be added to cart
+  * @returns {Array}
+  */
+
 const addItemToCart = (items, item) => {
   const cartItems = (items || []).slice(),
         cartItemsCount = cartItems.length,
         addItem = Object.assign({}, item);
   let checkAdd = true;
 
+  //Check existing of product in cart
   for (let j = 0; j < cartItemsCount; j++) {
     if (addItem.id === cartItems[j].id) {
       const updCartItem = Object.assign({}, cartItems[j]);
@@ -58,6 +67,14 @@ const addItemToCart = (items, item) => {
 
   return cartItems;
 }
+
+/**
+  * Delete product from cart by product id
+  *
+  * @param {Object} cart - cart
+  * @param {Number} id - product id that must be deleted from cart
+  * @returns {Object}
+  */
 
 const deleteCartItem = (cart, id) => {
   if (id !== 0 && !id) {
@@ -91,6 +108,14 @@ const deleteCartItem = (cart, id) => {
   return cart;
 }
 
+/**
+  * Change product count in cart
+  *
+  * @param {Array} items - products in cart
+  * @param {Number} id - product id that must be modified in cart
+  * @returns {Array}
+  */
+
 const changeCartItemCount = (items, id, newValue) => {
   if ((!id && id !== 0) || (!newValue && newValue !== 0)) {
     return;
@@ -111,6 +136,13 @@ const changeCartItemCount = (items, id, newValue) => {
   return cartItems;
 }
 
+/**
+  * Add coupon to cart
+  *
+  * @param {Object} cart - cart
+  * @param {Object} coupon - coupon that must be added in cart
+  * @returns {Array}
+  */
 
 const applyCoupon = (cart, coupon) => {
   const couponType = (coupon && coupon.type) || "",
@@ -128,6 +160,14 @@ const applyCoupon = (cart, coupon) => {
   return cartCoupons;
 }
 
+/**
+  * Delete coupons from cart by array of product's ids
+  *
+  * @param {Object} cart - cart
+  * @param {Array} ids - product's ids that must be deleted from cart
+  * @returns {Object}
+  */
+
 function deleteCoupons(cart, ids) {
   const cartCoupons = (cart.coupons || []).slice();
   const updCartCoupons = cartCoupons.filter(function (coupon) {
@@ -135,5 +175,4 @@ function deleteCoupons(cart, ids) {
   });
 
   return updCartCoupons.slice();
-
 }
