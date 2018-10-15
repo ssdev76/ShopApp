@@ -21,7 +21,8 @@ class Cart extends React.Component{
     const { cart } = this.props,
           items = (cart.items || []).slice(),
           isOpen = this.state.isOpen,
-          cartContent = this.getCartContent();
+          cartContent = this.getCartContent(),
+          itemsCount = items.reduce((sum, current) => sum + current.count, 0);
 
     return (
       <div>
@@ -30,7 +31,7 @@ class Cart extends React.Component{
             onClick = { this.toggleOpenCart }
             className = "cart_icon glyphicon glyphicon-trash"
           ></div>
-          <CartCounter/>
+          <CartCounter count = {itemsCount}/>
         </div>
         { cartContent }
       </div>
@@ -121,7 +122,7 @@ class Cart extends React.Component{
       return;
     }
 
-    const totalAmount = items.reduce(function (sum, current) {
+    const totalAmount = items.reduce((sum, current) => {
         current.sale = (current.sale) ? current.sale : 0;
 
         return sum + current.price * current.count * (1 - current.sale/100);

@@ -3,14 +3,11 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 const CartCounter = (props) => {
-  const { items } = props;
-  const itemsCount = items.reduce(function (sum, current) {
-    return sum + current.count;
-  }, 0);
+  const { count } = props;
 
   return (
     <div className = "cart_counter">
-      <span>{ itemsCount }</span>
+      <span>{ count }</span>
     </div>
   );
 }

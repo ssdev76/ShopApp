@@ -170,9 +170,7 @@ const applyCoupon = (cart, coupon) => {
 
 function deleteCoupons(cart, ids) {
   const cartCoupons = (cart.coupons || []).slice();
-  const updCartCoupons = cartCoupons.filter(function (coupon) {
-    return ids.indexOf(coupon.id) === -1;
-  });
+  const updCartCoupons = cartCoupons.filter(coupon => ids.indexOf(coupon.id) === -1);
 
   return updCartCoupons.slice();
 }
