@@ -43,7 +43,7 @@ export default (cart = {items: [], coupons: []}, action) => {
   */
 
 const addItemToCart = (items, item) => {
-  const cartItems = (items || []).slice(),
+  const cartItems = [...items],
         cartItemsCount = cartItems.length,
         addItem = Object.assign({}, item);
   let checkAdd = true;
@@ -82,7 +82,7 @@ const deleteCartItem = (cart, id) => {
   }
 
   let newCart = Object.assign({}, cart);
-  const cartItems = (newCart.items || []).slice();
+  const cartItems = [...newCart.items];
 
   for (let i = 0; i < cartItems.length; i++) {
     let item = cartItems[i];
@@ -121,7 +121,7 @@ const changeCartItemCount = (items, id, newValue) => {
     return;
   }
 
-  const cartItems = (items || []).slice();
+  const cartItems = [...items];
 
   for (let i = 0; i < cartItems.length; i++) {
     let item = cartItems[i];
@@ -146,7 +146,7 @@ const changeCartItemCount = (items, id, newValue) => {
 
 const applyCoupon = (cart, coupon) => {
   const couponType = (coupon && coupon.type) || "",
-        cartCoupons = (cart.coupons || []).slice(),
+        cartCoupons = [...cart.coupons],
         cartCouponsCount = cartCoupons.length;
 
   for (let i = 0; i < cartCouponsCount; i++) {
@@ -169,8 +169,8 @@ const applyCoupon = (cart, coupon) => {
   */
 
 function deleteCoupons(cart, ids) {
-  const cartCoupons = (cart.coupons || []).slice();
+  const cartCoupons = [...cart.coupons];
   const updCartCoupons = cartCoupons.filter(coupon => ids.indexOf(coupon.id) === -1);
 
-  return updCartCoupons.slice();
+  return [...updCartCoupons];
 }

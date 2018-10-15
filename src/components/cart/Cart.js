@@ -19,7 +19,7 @@ class Cart extends React.Component{
 
   render() {
     const { cart } = this.props,
-          items = (cart.items || []).slice(),
+          items = [...cart.items],
           isOpen = this.state.isOpen,
           cartContent = this.getCartContent(),
           itemsCount = items.reduce((sum, current) => sum + current.count, 0);
@@ -86,8 +86,8 @@ class Cart extends React.Component{
 
   getCartItems = () => {
     const { cart } = this.props,
-          items = (cart.items || []).slice(),
-          coupons = (cart.coupons || []).slice();
+          items = [...cart.items],
+          coupons = [...cart.coupons];
 
     const cartItems = items.map((item) => {
       let cartItem = Object.assign({}, item);
@@ -134,7 +134,7 @@ class Cart extends React.Component{
 
   getCouponsForCart = () => {
     const { cart, deleteCoupons } = this.props,
-          coupons = (cart.coupons || []).slice(),
+          coupons = [...cart.coupons],
           couponsForCart = coupons.filter((coupon) => {
             return coupon.type && coupon.type === "cart";
           });
