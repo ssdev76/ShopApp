@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { applyCoupon } from '../../AC';
 import './coupon.css';
 
-const Coupon = (props) => {
+const Coupon = props => {
   const { item, applyCoupon } = props;
 
   return (

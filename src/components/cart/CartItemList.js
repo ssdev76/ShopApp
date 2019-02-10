@@ -2,14 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import CartItem from './CartItem';
 
-const CartItemList = (props) => {
+const CartItemList = props => {
   const { items } = props;
   
   if ( !items || items.length === 0) {
     return;
   }
 
-  const cartItems = items.map((item) => 
+  const cartItems = items.map(item => 
       <CartItem
         key = { item.id }
         item = { item }

@@ -12,41 +12,26 @@ import './shop.css';
 class Shop extends React.Component {
 
   state = {
-    products: [],
     coupons: []
   }
 
   componentDidMount() {
-    fetch("https://next.json-generator.com/api/json/get/Ekhd3qgtH")
-      .then(res => res.json())
-      .then(
-        (result) => {
-          const coupons = [{                          /////ONLY FOR TEST
-            id: 1,
-            title: "TEST-COUPON-FOR-CART",
-            percent: 10,
-            type: "cart"
-          }, {
-            id: 2,
-            title: "TEST-COUPON-FOR-PRODUCT #2",
-            percent: 59,
-            type: "product",
-            product_id: 2
-          }];
+    const coupons = [{                          /////ONLY FOR TEST
+      id: 1,
+      title: "TEST-COUPON-FOR-CART",
+      percent: 10,
+      type: "cart"
+    }, {
+      id: 2,
+      title: "TEST-COUPON-FOR-PRODUCT #2",
+      percent: 59,
+      type: "product",
+      product_id: 2
+    }];
 
-          this.setState({
-            isLoaded: true,
-            products: result,
-            coupons
-          });
-        },
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
-        }
-      );
+    this.setState({
+      coupons
+    });
   }
 
   render() {
@@ -59,33 +44,17 @@ class Shop extends React.Component {
 
   getBody = () => {
     const coupons = this.getCoupons();
-    const { products, isLoaded, error } = this.state;
-    let body = <div id = "loader">
-                 <div className = "dot"></div>
-                 <div className = "lading"></div>
+
+    return <div className = "container">
+             <div className = "row"><UndoRedo/></div>
+             <div className = "row">
+               <div className = "col-md-12">
+                 <ProductList dataUrl = "https://next.json-generator.com/api/json/get/Ekhd3qgtH"/>
                </div>
-
-    if (isLoaded) {
-      body = (error) ? 
-                <div className = "error">
-                  <i className = "glyphicon glyphicon-warning-sign"></i>
-                  { error.message }
-                </div>
-             :  <div>
-                  <div className = "container">
-                    <div className = "row"><UndoRedo/></div>
-                    <div className = "row">
-                      <div className = "col-md-12">
-                        <ProductList items = { products }/>
-                      </div>
-                    </div>
-                    <Cart/>
-                    <div className = "coupons">{ coupons }</div>
-                  </div>
-                </div>
-    }
-
-    return body;
+             </div>
+             <Cart/>
+             <div className = "coupons">{ coupons }</div>
+           </div>
   }
 
   // Coupons

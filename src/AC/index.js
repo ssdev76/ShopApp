@@ -1,16 +1,29 @@
-import {ADD_CART_ITEM, DELETE_CART_ITEM, CHANGE_CART_ITEM_COUNT, ADD_CART_COUPON, DELETE_CART_COUPONS } from '../constants';
+import {ADD_CART_ITEM, 
+        DELETE_CART_ITEM, 
+        CHANGE_CART_ITEM_COUNT, 
+        ADD_CART_COUPON, 
+        DELETE_CART_COUPONS,
+        LOAD_PRODUCTS
+       } from '../constants';
+
+export function loadProducts(url) {
+  return {
+    type: LOAD_PRODUCTS,
+    payload: { url }
+  }
+}
 
 export function addItemToCart(item) {
   return {
     type: ADD_CART_ITEM,
-    payload: {item}
+    payload: { item }
   }
 }
 
 export function deleteCartItem(id) {
   return {
     type: DELETE_CART_ITEM,
-    payload: {id}
+    payload: { id }
   }
 }
 

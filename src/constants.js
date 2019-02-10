@@ -1,5 +1,9 @@
+export const LOAD_PRODUCTS = "LOAD_PRODUCTS";
 export const ADD_CART_ITEM = "ADD_CART_ITEM";
 export const DELETE_CART_ITEM = "DELETE_CART_ITEM";
 export const CHANGE_CART_ITEM_COUNT = "CHANGE_CART_ITEM_COUNT";
 export const ADD_CART_COUPON = "ADD_CART_COUPON";
 export const DELETE_CART_COUPONS = "DELETE_CART_COUPONS";
+export const START = "START";
+export const SUCCESSED = "SUCCESSED";
+export const FAILED = "FAILED";

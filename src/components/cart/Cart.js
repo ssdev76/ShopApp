@@ -10,7 +10,9 @@ import './cart.css';
 class Cart extends React.Component{
   static propTypes = {
     deleteCoupons: PropTypes.func,
-    cart: PropTypes.object
+    cart: PropTypes.object,
+    cartItemsCount: PropTypes.number,
+    cartTotalAmount: PropTypes.number
   }
 
   state = {
@@ -18,11 +20,8 @@ class Cart extends React.Component{
   }
 
   render() {
-    const { cart } = this.props,
-          items = [...cart.items],
-          isOpen = this.state.isOpen,
-          cartContent = this.getCartContent(),
-          itemsCount = items.reduce((sum, current) => sum + current.count, 0);
+    const cartContent = this.getCartContent();
+    const { cartItemsCount } = this.props;
 
     return (
       <div>
@@ -31,25 +30,23 @@ class Cart extends React.Component{
             onClick = { this.toggleOpenCart }
             className = "cart_icon glyphicon glyphicon-trash"
           ></div>
-          <CartCounter count = {itemsCount}/>
+          <CartCounter count = { cartItemsCount }/>
         </div>
         { cartContent }
       </div>
     )
   }
 
-  toggleOpenCart = (ev) => {
+  toggleOpenCart = ev => {
     this.setState({
       isOpen: !this.state.isOpen
     });
   }
 
   getCartContent = () => {
-    const items = this.getCartItems(),
-          itemsCount = items && items.length || 0,
-          totalAmount = this.getTotalAmount(items),
-          couponsForCart = this.getCouponsForCart(),
-          isOpen = this.state.isOpen;
+    const {cart, cartItemsCount, cartTotalAmount} = this.props;
+    const couponsForCart = this.getCouponsForCart();
+    const isOpen = this.state.isOpen;
 
     let cartContent = <div className = "cart_content">
                         <div 
@@ -63,7 +60,7 @@ class Cart extends React.Component{
       return;
     }
 
-    if (itemsCount === 0) {
+    if (cartItemsCount === 0) {
       return cartContent;
     }
 
@@ -72,11 +69,11 @@ class Cart extends React.Component{
                onClick = { this.toggleOpenCart }
                className = "close_cart"
              >×</div>
-             <CartItemList items = { items }/>
+             <CartItemList items = { cart.items }/>
              <div className = "coupons_cart">
                { couponsForCart }
              </div>
-             { totalAmount }
+             <div>Total: { cartTotalAmount }</div>
              <ReactToPrint 
                trigger = { () => <button className = "print btn btn-primary">Print check</button> }
                content = { () => this.checkRef }
@@ -84,62 +81,14 @@ class Cart extends React.Component{
            </div>;
   }
 
-  getCartItems = () => {
-    const { cart } = this.props,
-          items = [...cart.items],
-          coupons = [...cart.coupons];
-
-    const cartItems = items.map((item) => {
-      let cartItem = Object.assign({}, item);
-
-      cartItem.sale = 0;
-      cartItem.coupons = [];
-
-      coupons.forEach((coupon) => {
-        if (coupon.type === "cart" || coupon.product_id == cartItem.id) {
-          cartItem.sale += 1 * coupon.percent;
-
-          if (coupon.product_id == cartItem.id) {
-            cartItem.coupons.push(coupon);
-          }
-
-          if (cartItem.sale >= 100) {
-            return cartItem.sale = 100;
-          }
-        }
-
-        return cartItem.sale;
-      });
-
-      return cartItem;
-    });
-
-    return cartItems;
-  }
-
-  getTotalAmount = (items) => {
-    if (!items || items.length === 0) {
-      return;
-    }
-
-    const totalAmount = items.reduce((sum, current) => {
-        current.sale = (current.sale) ? current.sale : 0;
-
-        return sum + current.price * current.count * (1 - current.sale/100);
-      }, 0);
-    const result = <div>Total: { totalAmount }</div>;
-
-    return result;
-  }
-
   getCouponsForCart = () => {
     const { cart, deleteCoupons } = this.props,
-          coupons = [...cart.coupons],
-          couponsForCart = coupons.filter((coupon) => {
+          coupons = cart && [...cart.coupons] || [],
+          couponsForCart = coupons.filter(coupon => {
             return coupon.type && coupon.type === "cart";
           });
 
-    return couponsForCart.map((coupon) =>
+    return couponsForCart.map(coupon =>
       <button
         key = { coupon.id }
         className = "coupon_cart btn"
@@ -153,6 +102,24 @@ class Cart extends React.Component{
   }
 }
 
-export default connect((state) => ({
-  cart: state.cart.present
+const getCartItemsCount = cart => {
+    const items = cart && [...cart.items] || [];
+
+    return items.reduce((sum, current) => sum + current.count, 0);
+}
+
+const getTotalAmount = cart => {
+  const items = cart && [...cart.items] || [];
+
+  return items.reduce((sum, current) => {
+      current.sale = (current.sale) ? current.sale : 0;
+
+      return sum + current.price * current.count * (1 - current.sale/100);
+    }, 0);
+}
+
+export default connect(state => ({
+  cart: state.cart.present,
+  cartItemsCount: getCartItemsCount(state.cart.present),
+  cartTotalAmount: getTotalAmount(state.cart.present)
 }), { deleteCoupons })(Cart);

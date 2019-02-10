@@ -13,9 +13,7 @@ const CartCounter = (props) => {
 }
 
 CartCounter.propTypes = {
-  items: PropTypes.array
+  count: PropTypes.number
 }
 
-export default connect((state) => ({
-  items: state.cart.present.items
-}))(CartCounter);
+export default CartCounter;

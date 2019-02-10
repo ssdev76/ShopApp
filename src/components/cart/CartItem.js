@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { deleteCartItem, changeCartItemCount, deleteCoupons } from '../../AC';
 
-const CartItem = (props) => {
+const CartItem = props => {
   const { item, deleteCartItem, changeCartItemCount } = props;
   const sale = (item && item.sale) || 0;
   const couponsForProduct = getCouponsForProduct(props);
@@ -54,14 +54,14 @@ CartItem.defaultProps = {
   coupons: []
 }
 
-const getCouponsForProduct = (props) => {
+const getCouponsForProduct = props => {
   const { coupons, deleteCoupons } = props;
   
   if ( !coupons || coupons.length === 0) {
     return;
   }
 
-  return coupons.map((coupon) =>
+  return coupons.map(coupon =>
     <button
       key = { coupon.id }
       className = "coupon_product btn"
