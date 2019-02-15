@@ -10,7 +10,7 @@ export default (cart = {items: [], coupons: []}, action) => {
       return Object.assign({}, cart, {items: newItems});
     }
     case DELETE_CART_ITEM: {
-      const newCartItems = deleteCartItem(cart, payload.id);
+      const newCartItems = deleteCartItem(cart.items, payload.id);
       const newCartCoupons = (newCartItems.length === 0) ? [] : deleteCouponsByProductsId(cart, [payload.id]);
 
       return Object.assign({}, cart, {items: newCartItems, coupons: newCartCoupons});
@@ -22,13 +22,13 @@ export default (cart = {items: [], coupons: []}, action) => {
     }
     case ADD_CART_COUPON: {
       const newCartCoupons = applyCoupon(cart, payload.coupon);
-      const newCartItems = applyCouponsToCartItems([...cart.items], newCartCoupons);
+      const newCartItems = applyCouponsToCartItems(cart.items, newCartCoupons);
 
       return Object.assign({}, cart, {coupons: newCartCoupons, items: newCartItems});
     }
     case DELETE_CART_COUPONS: {
       const newCartCoupons = deleteCouponsById(cart, payload.ids);
-      const newCartItems = applyCouponsToCartItems([...cart.items], newCartCoupons); 
+      const newCartItems = applyCouponsToCartItems(cart.items, newCartCoupons); 
 
       return Object.assign({}, cart, {coupons: newCartCoupons, items: newCartItems});
     }
@@ -46,27 +46,18 @@ export default (cart = {items: [], coupons: []}, action) => {
   */
 
 const addItemToCart = (items, item) => {
-  const cartItems = [...items],
-        cartItemsCount = cartItems.length,
-        addItem = Object.assign({}, item);
-  let checkAdd = true;
+  let addItem = {...item};
+  const cartItems = [...items];
+  const cartItemIndex = cartItems.findIndex(cartItem => cartItem.id === addItem.id);
 
-  //Check existing of product in cart
-  for (let j = 0; j < cartItemsCount; j++) {
-    if (addItem.id === cartItems[j].id) {
-      const updCartItem = Object.assign({}, cartItems[j]);
-      updCartItem.count++;
-      cartItems[j] = updCartItem;
-      checkAdd = false;
-
-      break;
-    }
-  }
-
-  if (checkAdd && addItem) {
-    addItem.count = 1;
-    cartItems.push(addItem);
-  }
+  (cartItemIndex === -1) ? (
+    addItem.count = 1,
+    cartItems.push(addItem)
+  ) : (
+    addItem = {...cartItems[cartItemIndex]},
+    addItem.count++,
+    cartItems[cartItemIndex] = addItem
+  );
 
   return cartItems;
 }
@@ -79,26 +70,7 @@ const addItemToCart = (items, item) => {
   * @returns {Object}
   */
 
-const deleteCartItem = (cart, id) => {
-  if (id !== 0 && !id) {
-    return cart;
-  }
-
-  const cartItems = [...cart.items];
-  const cartItemsCount = cartItems.length;
-
-  for (let i = 0; i < cartItemsCount; i++) {
-    let item = cartItems[i];
-
-    if (item.id === id) {
-      cartItems.splice(i, 1);
-
-      return cartItems;
-    }
-  }
-
-  return cart;
-}
+const deleteCartItem = (items, id) => [...items].filter(item => item.id !== id);
 
 /**
   * Change product count in cart
@@ -108,25 +80,16 @@ const deleteCartItem = (cart, id) => {
   * @returns {Array}
   */
 
-const changeCartItemCount = (items, id, newValue) => {
-  if ((!id && id !== 0) || (!newValue && newValue !== 0)) {
-    return items;
+const changeCartItemCount = (items, id, newValue) => [...items].map(item => {
+  if (item.id !== id) {
+    return item;
   }
 
-  const cartItems = [...items];
+  const updItem = {...item};
 
-  for (let i = 0; i < cartItems.length; i++) {
-    let item = cartItems[i];
-
-    if (item.id === id) {
-      const updCartItem = Object.assign({}, cartItems[i]);
-      updCartItem.count = 1 * newValue;
-      cartItems[i] = updCartItem;
-    }
-  }
-
-  return cartItems;
-}
+  updItem.count = 1 * newValue;
+  return updItem;
+});
 
 /**
   * Add coupon to cart
@@ -136,20 +99,10 @@ const changeCartItemCount = (items, id, newValue) => {
   * @returns {Array}
   */
 
-const applyCoupon = (cart, coupon) => {
-  const couponType = (coupon && coupon.type) || "",
-        cartCoupons = [...cart.coupons],
-        cartCouponsCount = cartCoupons.length;
-
-  for (let i = 0; i < cartCouponsCount; i++) {
-    if (cartCoupons[i].id === coupon.id) {
-      return cartCoupons;
-    }
-  }
-
-  cartCoupons.push(Object.assign({}, coupon));
-  return cartCoupons;
-}
+const applyCoupon = (cart, coupon) => 
+  (cart.coupons.findIndex(cartCoupon => cartCoupon.id === coupon.id) === -1 && cart.items.length > 0) ?
+  [...cart.coupons].concat({...coupon}) :
+  [...cart.coupons];
 
 /**
   * Delete coupons from cart by array of coupon's ids
@@ -159,11 +112,7 @@ const applyCoupon = (cart, coupon) => {
   * @returns {Array}
   */
 
-const deleteCouponsById = (cart, ids) => {
-  const cartCoupons = [...cart.coupons],
-        cartItems = [...cart.items];
-  return cartCoupons.filter(coupon => ids.indexOf(coupon.id) === -1);
-}
+const deleteCouponsById = (cart, ids) => [...cart.coupons].filter(coupon => ids.indexOf(coupon.id) === -1);
 
 /**
   * Delete coupons from cart by array of product's ids
@@ -173,11 +122,7 @@ const deleteCouponsById = (cart, ids) => {
   * @returns {Array}
   */
 
-const deleteCouponsByProductsId = (cart, ids) => {
-  const cartCoupons = [...cart.coupons],
-        cartItems = [...cart.items];
-  return cartCoupons.filter(coupon => ids.indexOf(coupon.product_id) === -1);
-}
+const deleteCouponsByProductsId = (cart, productIds) => [...cart.coupons].filter(coupon => productIds.indexOf(coupon.product_id) === -1);
 
 /**
   * Apply coupons to items of cart
@@ -187,31 +132,19 @@ const deleteCouponsByProductsId = (cart, ids) => {
   * @returns {Array}
   */
 
-const applyCouponsToCartItems = (cartItems, cartCoupons) => {
-  if (!cartCoupons) {
-    return cartItems;
-  }
+const applyCouponsToCartItems = (cartItems, cartCoupons) => 
+  [...cartItems].map(item => {
+    let sale = 0;
+    let coupons = [];
+    const cartItem = {...item};
 
-  return cartItems.map(item => {
-    item.sale = 0;
-    item.coupons = [];
-    
-    cartCoupons.forEach(coupon => {
-        if (coupon.type === "cart" || coupon.product_id == item.id) {
-        item.sale += 1 * coupon.percent;
-    
-        if (coupon.product_id == item.id) {
-            item.coupons.push(coupon);
-        }
-    
-        if (item.sale >= 100) {
-            return item.sale = 100;
-        }
-        }
-    
-        return item.sale;
+    [...cartCoupons].forEach(coupon => {
+      sale += 1 * ((coupon.type === "cart" || coupon.product_id === item.id) && coupon.percent);
+      (coupon.product_id === item.id) && coupons.push({...coupon});
     });
-    
-    return item;
+
+    cartItem.sale = (sale >= 100) ? 100 : sale;
+    cartItem.coupons = coupons;
+
+    return cartItem;
   });
-}

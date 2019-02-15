@@ -102,21 +102,12 @@ class Cart extends React.Component{
   }
 }
 
-const getCartItemsCount = cart => {
-    const items = cart && [...cart.items] || [];
+const getCartItemsCount = cart => (cart && [...cart.items] || []).reduce((sum, current) => sum + current.count, 0);
 
-    return items.reduce((sum, current) => sum + current.count, 0);
-}
-
-const getTotalAmount = cart => {
-  const items = cart && [...cart.items] || [];
-
-  return items.reduce((sum, current) => {
-      current.sale = (current.sale) ? current.sale : 0;
-
-      return sum + current.price * current.count * (1 - current.sale/100);
-    }, 0);
-}
+const getTotalAmount = cart => (cart && [...cart.items] || []).reduce((sum, current) => {
+    current.sale = (current.sale) ? current.sale : 0;
+    return sum + current.price * current.count * (1 - current.sale/100);
+  }, 0);
 
 export default connect(state => ({
   cart: state.cart.present,
